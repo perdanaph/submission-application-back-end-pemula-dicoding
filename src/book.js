@@ -11,6 +11,7 @@ class Books {
     this.publisher = insert.publisher;
     this.pageCount = insert.pageCount;
     this.readPage = insert.readPage;
+    this.finished = insert.readPage === insert.pageCount;
     this.reading = insert.reading;
 
     const timeCreated = new Date().toISOString();

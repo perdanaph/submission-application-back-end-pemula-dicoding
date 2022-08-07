@@ -1,8 +1,10 @@
+const {postHandlerBook} = require('./handler');
+
 
 const routes = [{
   method: 'POST',
   path: '/books',
-  handler: () => {},
+  handler: postHandlerBook,
 }];
 
 module.exports = routes;
