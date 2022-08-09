@@ -54,11 +54,38 @@ const postHandlerBook = (request, h) => {
   };
 };
 
-
+// GET all books
 const getAllhandlerBook = (request, h) => {
-  console.info(123);
+  const {name, reading, finished} = request.query;
+  const allBooks = [...storage.values()];
+  let booksByQuery = allBooks;
+
+  if (name !== undefined) {
+    booksByQuery = allBooks.filter((entry) => entry.name.toLowerCase().includes(name.toLowerCase()));
+  }
+
+  if (reading !== undefined) {
+    booksByQuery = allBooks.filter((entry) => entry.reading === (reading === '1'));
+  }
+
+  if (finished !== undefined) {
+    booksByQuery = allBooks.filter((entry) => entry.finished === (finished === '1'));
+  }
+
+  const finalBooksResult = booksByQuery.map((bookEntry) => bookEntry.getIdNameAndPublisher());
+
+  const status = 'success';
+  const response = h.response({
+    status: status,
+    data: {
+      book: finalBooksResult,
+    },
+  });
+  response.code(200);
+  return response;
 };
 
+// GET booksById
 const getByIdHandlerBook = (request, h) => {
   const {bookIdParam} = request.params;
   const getBookById = storage.filter((details) => details.id === bookIdParam)[0];
@@ -69,9 +96,7 @@ const getByIdHandlerBook = (request, h) => {
       status: status,
       response: response,
       data: {
-        book: {
-          getBookById,
-        },
+        book: getBookById,
       },
     };
   };
