@@ -54,6 +54,40 @@ const postHandlerBook = (request, h) => {
   };
 };
 
+
+const getAllhandlerBook = (request, h) => {
+  console.info(123);
+};
+
+const getByIdHandlerBook = (request, h) => {
+  const {bookIdParam} = request.params;
+  const getBookById = storage.filter((details) => details.id === bookIdParam)[0];
+  if (getBookById !== undefined) {
+    const status = 'success';
+    const response = h.response().code(200);
+    return {
+      status: status,
+      response: response,
+      data: {
+        book: {
+          getBookById,
+        },
+      },
+    };
+  };
+
+  const status = 'fail';
+  const message = 'Buku tidak ditemukan';
+  const response = h.response({
+    status: status,
+    message: message,
+  });
+  response.code(404);
+  return response;
+};
+
 module.exports = {
   postHandlerBook,
+  getByIdHandlerBook,
+  getAllhandlerBook,
 };
