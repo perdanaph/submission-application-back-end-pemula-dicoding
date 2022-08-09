@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
 const {nanoid} = require('nanoid');
 
-// Menambah class books untuk template saat menambah buku baru
+// Menambah class books yang berisi kriteria buku untuk template saat menambah buku baru
 class Books {
   constructor(insert) {
     this.id = nanoid(16);
