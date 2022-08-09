@@ -1,6 +1,7 @@
 /* eslint-disable require-jsdoc */
 const {nanoid} = require('nanoid');
 
+// Menambah class books untuk template saat menambah buku baru
 class Books {
   constructor(insert) {
     this.id = nanoid(16);
@@ -39,5 +40,6 @@ class Books {
     };
   };
 };
+
 
 module.exports = Books;
