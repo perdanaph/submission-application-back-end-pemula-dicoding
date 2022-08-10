@@ -121,10 +121,30 @@ const putHandlerBookByid = (request, h) => {
   }).code(200);
 };
 
+// Delete bookById
+const deleteHandlerBookById = (request, h) => {
+  const {bookId} = request.params;
+  const getBook = storage.findIndex((idBook) => idBook.id === bookId);
 
+  if (getBook === undefined) {
+    return h.response({
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan',
+    }).code(404);
+  }
+
+  if (getBook !== -1) {
+    storage.splice(getBook, 1);
+    return h.response({
+      status: 'success',
+      message: 'Buku Berhasil dihapus',
+    }).code(200);
+  };
+};
 module.exports = {
   postHandlerBook,
   getByIdHandlerBook,
   getAllhandlerBook,
   putHandlerBookByid,
+  deleteHandlerBookById,
 };
