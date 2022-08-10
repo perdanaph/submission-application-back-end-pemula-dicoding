@@ -32,10 +32,6 @@ class Books {
     this.reading = dataUpdate.reading;
     this.updatedAt = new Date().toISOString();
   };
-
-  getIdByNamePublisher() {
-    return {id: this.id, name: this.name, publisher: this.publisher};
-  };
 };
 
 

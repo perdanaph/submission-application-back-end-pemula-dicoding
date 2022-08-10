@@ -94,7 +94,7 @@ const putHandlerBookByid = (request, h) => {
   const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
 
   if (payload.name === undefined) {
-    return h.reponse({
+    return h.response({
       status: 'fail',
       message: 'Gagal memperbarui buku. Mohon isi nama buku',
     }).code(400);
@@ -104,22 +104,23 @@ const putHandlerBookByid = (request, h) => {
     return h.response({
       status: 'fail',
       message: 'Gagal memperbarui buku. Id tidak ditemukan',
-    });
+    }).code(404);
   };
 
   if (payload.readPage > payload.pageCount) {
     return h.response({
       status: 'fail',
       message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
-    });
+    }).code(400);
   };
 
   getBook.updateBooks(payload);
   return h.response({
     status: 'success',
     message: 'Buku berhasil diperbarui',
-  });
+  }).code(200);
 };
+
 
 module.exports = {
   postHandlerBook,
