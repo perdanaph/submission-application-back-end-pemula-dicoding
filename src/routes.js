@@ -8,17 +8,17 @@ const routes = [
   {
     method: 'POST',
     path: '/books',
-    hanlder: postHandlerBook,
+    handler: postHandlerBook,
   },
   {
     method: 'GET',
     path: '/books',
-    henlder: getAllhandlerBook,
+    handler: getAllhandlerBook,
   },
   {
     method: 'GET',
     path: '/books/{bookId}',
-    hanlder: getByIdHandlerBook,
+    handler: getByIdHandlerBook,
   },
   {
     method: 'PUT',

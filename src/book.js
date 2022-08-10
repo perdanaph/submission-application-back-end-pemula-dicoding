@@ -17,7 +17,7 @@ class Books {
     this.reading = insert.reading;
 
     const timeCreated = new Date().toISOString();
-    this.createdAt = timeCreated;
+    this.insertedAt = timeCreated;
     this.updatedAt = timeCreated;
   };
 
@@ -33,12 +33,8 @@ class Books {
     this.updatedAt = new Date().toISOString();
   };
 
-  getIdByNameAndPublisher() {
-    return {
-      id: this.id,
-      name: this.name,
-      publisher: this.publisher,
-    };
+  getIdByNamePublisher() {
+    return {id: this.id, name: this.name, publisher: this.publisher};
   };
 };
 

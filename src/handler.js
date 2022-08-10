@@ -8,107 +8,83 @@ const postHandlerBook = (request, h) => {
   try {
     const {payload} = request;
     if (payload.name === undefined) {
-      const status = 'fail';
-      const message = 'Gagal menambah buku. Mohon isi nama buku';
-      const response = h.response({
-        status: status,
-        message: message,
-      });
-      response.code(400);
-      return response;
+      return h.response({
+        status: 'fail',
+        message: 'Gagal menambahkan buku. Mohon isi nama buku',
+      }).code(400);
     };
 
     if (payload.readPage > payload.pageCount) {
-      const status = 'fail';
-      const message = 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount';
-      const response = h.response({
-        status: status,
-        message: message,
-      });
-      response.code(400);
-      return response;
+      return h.response({
+        status: 'fail',
+        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      }).code(400);
     };
 
     const newBook = new Books(payload);
     storage.push(newBook);
-    const status = 'success';
-    const message = 'Buku berhasil ditambahkan';
-    const response = h.response({
-      status: status,
-      message: message,
+    return h.response({
+      status: 'success',
+      message: 'Buku berhasil ditambahkan',
       data: {
         bookId: newBook.id,
       },
-    });
-    response.code(201);
-    return response;
+    }).code(201);
   } catch (err) {
-    const status = 'error';
-    const message = 'Buku gagal ditambahkan';
-    const response = h.response({
-      status: status,
-      message: message,
-    });
-    response.code(500);
-    return response;
+    return h.response({
+      status: 'fail',
+      message: 'Buku gagal ditambahkan',
+    }).code(500);
   };
 };
 
 // GET all books
 const getAllhandlerBook = (request, h) => {
   const {name, reading, finished} = request.query;
-  const allBooks = [...storage.values()];
-  let booksByQuery = allBooks;
+  const bookValues = [...storage.values()];
+  let booksByQuery = bookValues;
 
   if (name !== undefined) {
-    booksByQuery = allBooks.filter((entry) => entry.name.toLowerCase().includes(name.toLowerCase()));
+    booksByQuery = bookValues.filter((result) => result.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (reading !== undefined) {
-    booksByQuery = allBooks.filter((entry) => entry.reading === (reading === '1'));
+    booksByQuery = bookValues.filter((result) => result.reading === (reading === '1'));
   }
 
   if (finished !== undefined) {
-    booksByQuery = allBooks.filter((entry) => entry.finished === (finished === '1'));
+    booksByQuery = bookValues.filter((result) => result.finished === (finished === '1'));
   }
 
-  const finalBooksResult = booksByQuery.map((bookEntry) => bookEntry.getIdNameAndPublisher());
-
-  const status = 'success';
-  const response = h.response({
-    status: status,
+  const finalBooksResult = booksByQuery.map((bookResult) => ({
+    id: bookResult.id,
+    name: bookResult.name,
+    publisher: bookResult.publisher,
+  }));
+  return h.response({
+    status: 'success',
     data: {
-      book: finalBooksResult,
+      books: finalBooksResult,
     },
-  });
-  response.code(200);
-  return response;
+  }).code(200);
 };
 
 // GET booksById
 const getByIdHandlerBook = (request, h) => {
-  const {bookIdParam} = request.params;
-  const getBookById = storage.filter((details) => details.id === bookIdParam)[0];
-  if (getBookById !== undefined) {
-    const status = 'success';
-    const response = h.response().code(200);
-    return {
-      status: status,
-      response: response,
+  const {bookId} = request.params;
+  const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
+  if (getBook !== undefined) {
+    return h.response({
+      status: 'success',
       data: {
-        book: getBookById,
+        book: getBook,
       },
-    };
-  };
-
-  const status = 'fail';
-  const message = 'Buku tidak ditemukan';
-  const response = h.response({
-    status: status,
-    message: message,
-  });
-  response.code(404);
-  return response;
+    }).code(200);
+  }
+  return h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  }).code(404);
 };
 
 module.exports = {
