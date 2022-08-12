@@ -40,102 +40,130 @@ const postHandlerBook = (request, h) => {
 
 // GET all books
 const getAllhandlerBook = (request, h) => {
-  const {name, reading, finished} = request.query;
-  let bookValues = storage;
-
-  if (name !== undefined) {
-    bookValues = bookValues.filter((result) => result.name.toLowerCase().includes(name.toLowerCase()));
+  try {
+    const {name, reading, finished} = request.query;
+    let bookValues = storage;
+  
+    if (name !== undefined) {
+      bookValues = bookValues.filter((result) => result.name.toLowerCase().includes(name.toLowerCase()));
+    }
+  
+    if (reading !== undefined) {
+      bookValues = bookValues.filter((result) => result.reading === (reading === '1'));
+    }
+  
+    if (finished !== undefined) {
+      bookValues = bookValues.filter((result) => result.finished === (finished === '1'));
+    }
+  
+    const finalBooksResult = bookValues.map((bookResult) => ({
+      id: bookResult.id,
+      name: bookResult.name,
+      publisher: bookResult.publisher,
+    }));
+    return h.response({
+      status: 'success',
+      data: {
+        books: finalBooksResult,
+      },
+    }).code(200);
+  } catch (err) {
+    return h.response({
+      status: 'fail',
+      message: 'Terjadi kesalahan pada server',
+    }).code(500);
   }
-
-  if (reading !== undefined) {
-    bookValues = bookValues.filter((result) => result.reading === (reading === '1'));
-  }
-
-  if (finished !== undefined) {
-    bookValues = bookValues.filter((result) => result.finished === (finished === '1'));
-  }
-
-  const finalBooksResult = bookValues.map((bookResult) => ({
-    id: bookResult.id,
-    name: bookResult.name,
-    publisher: bookResult.publisher,
-  }));
-  return h.response({
-    status: 'success',
-    data: {
-      books: finalBooksResult,
-    },
-  }).code(200);
 };
 
 // GET booksById
 const getByIdHandlerBook = (request, h) => {
-  const {bookId} = request.params;
-  const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
-  if (getBook !== undefined) {
+  try {
+    const {bookId} = request.params;
+    const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
+    if (getBook !== undefined) {
+      return h.response({
+        status: 'success',
+        data: {
+          book: getBook,
+        },
+      }).code(200);
+    }
     return h.response({
-      status: 'success',
-      data: {
-        book: getBook,
-      },
-    }).code(200);
+      status: 'fail',
+      message: 'Buku tidak ditemukan',
+    }).code(404);
+  } catch (err) {
+    return h.response({
+      status: 'fail',
+      message: 'Terjadi kesalahan pada server',
+    }).code(500);
   }
-  return h.response({
-    status: 'fail',
-    message: 'Buku tidak ditemukan',
-  }).code(404);
 };
 
 // PUT booksById
 const putHandlerBookByid = (request, h) => {
-  const {payload} = request;
-  const {bookId} = request.params;
-  const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
-
-  if (payload.name === undefined) {
+  try {
+    const {payload} = request;
+    const {bookId} = request.params;
+    const getBook = storage.filter((idBook) => idBook.id === bookId)[0];
+  
+    if (payload.name === undefined) {
+      return h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku',
+      }).code(400);
+    };
+  
+    if (getBook === undefined) {
+      return h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+      }).code(404);
+    };
+  
+    if (payload.readPage > payload.pageCount) {
+      return h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+      }).code(400);
+    };
+  
+    getBook.updateBooks(payload);
+    return h.response({
+      status: 'success',
+      message: 'Buku berhasil diperbarui',
+    }).code(200);
+  } catch (err) {
     return h.response({
       status: 'fail',
-      message: 'Gagal memperbarui buku. Mohon isi nama buku',
-    }).code(400);
-  };
-
-  if (getBook === undefined) {
-    return h.response({
-      status: 'fail',
-      message: 'Gagal memperbarui buku. Id tidak ditemukan',
-    }).code(404);
-  };
-
-  if (payload.readPage > payload.pageCount) {
-    return h.response({
-      status: 'fail',
-      message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
-    }).code(400);
-  };
-
-  getBook.updateBooks(payload);
-  return h.response({
-    status: 'success',
-    message: 'Buku berhasil diperbarui',
-  }).code(200);
+      message: 'Terjadi kesalahan pada server',
+    }).code(500);
+  }
 };
 
 // Delete bookById
 const deleteHandlerBookById = (request, h) => {
-  const {bookId} = request.params;
-  const getBookId = storage.findIndex((idBook) => idBook.id === bookId);
-
-  if (getBookId !== -1) {
-    storage.splice(getBookId, 1);
+  try {
+    const {bookId} = request.params;
+    const getBookId = storage.findIndex((idBook) => idBook.id === bookId);
+  
+    if (getBookId !== -1) {
+      storage.splice(getBookId, 1);
+      return h.response({
+        status: 'success',
+        message: 'Buku berhasil dihapus',
+      }).code(200);
+    };
     return h.response({
-      status: 'success',
-      message: 'Buku berhasil dihapus',
-    }).code(200);
-  };
-  return h.response({
-    status: 'fail',
-    message: 'Buku gagal dihapus. Id tidak ditemukan',
-  }).code(404);
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan',
+    }).code(404);
+  } catch (err) {
+    return h.response({
+      status: 'fail',
+      message: 'Terjadi kesalahan pada server',
+    }).code(500);
+  }
 };
 
 
