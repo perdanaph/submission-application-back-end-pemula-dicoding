@@ -41,22 +41,21 @@ const postHandlerBook = (request, h) => {
 // GET all books
 const getAllhandlerBook = (request, h) => {
   const {name, reading, finished} = request.query;
-  const bookValues = [...storage.values()];
-  let booksByQuery = bookValues;
+  let bookValues = storage;
 
   if (name !== undefined) {
-    booksByQuery = bookValues.filter((result) => result.name.toLowerCase().includes(name.toLowerCase()));
+    bookValues = bookValues.filter((result) => result.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (reading !== undefined) {
-    booksByQuery = bookValues.filter((result) => result.reading === (reading === '1'));
+    bookValues = bookValues.filter((result) => result.reading === (reading === '1'));
   }
 
   if (finished !== undefined) {
-    booksByQuery = bookValues.filter((result) => result.finished === (finished === '1'));
+    bookValues = bookValues.filter((result) => result.finished === (finished === '1'));
   }
 
-  const finalBooksResult = booksByQuery.map((bookResult) => ({
+  const finalBooksResult = bookValues.map((bookResult) => ({
     id: bookResult.id,
     name: bookResult.name,
     publisher: bookResult.publisher,
